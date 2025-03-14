@@ -21,4 +21,4 @@ h11==0.14.0
 h2==4.1.0
 priority==2.0.0
 wsproto==1.2.0
-typing-extensions==4.9.0
+typing-extensions==4.11.0
