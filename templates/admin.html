@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible AI - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-shield-alt"></i> Admin Dashboard</h2>
+            </div>
+            <div class="sidebar-content">
+                <button class="sidebar-button active" data-section="overview">
+                    <i class="fas fa-chart-line"></i> Overview
+                </button>
+                <button class="sidebar-button" data-section="themes">
+                    <i class="fas fa-tags"></i> Theme Analysis
+                </button>
+                <button class="sidebar-button" data-section="analytics">
+                    <i class="fas fa-clock"></i> Time Analytics
+                </button>
+                <button class="sidebar-button" data-section="thresholds">
+                    <i class="fas fa-sliders-h"></i> Thresholds
+                </button>
+                <button class="sidebar-button" data-section="feedback">
+                    <i class="fas fa-comments"></i> Recent Feedback
+                </button>
+                <button class="sidebar-button" data-section="export">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
+                <button class="sidebar-button" data-section="knowledge-base">
+                    <i class="fas fa-book"></i> Knowledge Base
+                </button>
+            </div>
+            <div class="sidebar-footer">
+                <a href="{{ url_for('admin_logout') }}" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="app-title">
+                    <i class="fas fa-bible"></i>
+                    Bible AI Admin
+                </div>
+                <div class="top-bar-actions">
+                    <button class="top-bar-button" id="refresh-data">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <div class="admin-section active" id="overview">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Overall Success Rate</h3>
+                        <div class="metric" id="overall-success-rate">0%</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Total Feedback</h3>
+                        <div class="metric" id="total-feedback">0</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Positive Feedback</h3>
+                        <div class="metric" id="positive-feedback">0%</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Active Themes</h3>
+                        <div class="metric" id="active-themes">0</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="feedback-trend"></canvas>
+                </div>
+            </div>
+
+            <!-- Theme Analysis Section -->
+            <div class="admin-section" id="themes">
+                <h2>Theme Analysis</h2>
+                <div class="theme-grid">
+                    <div class="theme-card">
+                        <h3>Theme Distribution</h3>
+                        <canvas id="theme-distribution"></canvas>
+                    </div>
+                    <div class="theme-card">
+                        <h3>Success Rate by Theme</h3>
+                        <canvas id="theme-success"></canvas>
+                    </div>
+                </div>
+                <div class="theme-list">
+                    <h3>Detailed Theme Analysis</h3>
+                    <div class="theme-table-container">
+                        <table class="theme-table">
+                            <thead>
+                                <tr>
+                                    <th>Theme</th>
+                                    <th>Success Rate</th>
+                                    <th>Total Feedback</th>
+                                    <th>Positive</th>
+                                    <th>Negative</th>
+                                </tr>
+                            </thead>
+                            <tbody id="theme-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Analytics Section -->
+            <div class="admin-section" id="analytics">
+                <h2>Time-Based Analytics</h2>
+                <div class="time-analytics-controls">
+                    <button class="time-period-button active" data-period="hourly">Hourly</button>
+                    <button class="time-period-button" data-period="daily">Daily</button>
+                    <button class="time-period-button" data-period="weekly">Weekly</button>
+                    <button class="time-period-button" data-period="monthly">Monthly</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="time-analytics-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Thresholds Section -->
+            <div class="admin-section" id="thresholds">
+                <h2>Improvement Thresholds</h2>
+                <div class="thresholds-container">
+                    <div class="threshold-card">
+                        <h3>Success Rate Threshold</h3>
+                        <div class="threshold-control">
+                            <input type="range" id="success-threshold" min="0" max="100" step="5">
+                            <span id="success-threshold-value">60%</span>
+                        </div>
+                    </div>
+                    <div class="threshold-card">
+                        <h3>Minimum Feedback Count</h3>
+                        <div class="threshold-control">
+                            <input type="number" id="min-feedback" min="1" max="10">
+                            <span>responses</span>
+                        </div>
+                    </div>
+                    <button class="save-thresholds">Save Thresholds</button>
+                </div>
+            </div>
+
+            <!-- Recent Feedback Section -->
+            <div class="admin-section" id="feedback">
+                <h2>Recent Feedback</h2>
+                <div class="feedback-list" id="recent-feedback"></div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="admin-section" id="export">
+                <h2>Export Data</h2>
+                <div class="export-container">
+                    <p>Export all feedback and analysis data in CSV format.</p>
+                    <a href="{{ url_for('export_data') }}" class="export-button">
+                        <i class="fas fa-download"></i> Download CSV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Knowledge Base Section -->
+            <div class="admin-section" id="knowledge-base">
+                <h2>Knowledge Base Management</h2>
+                
+                <!-- Import Section -->
+                <div class="card">
+                    <h3>Import Content</h3>
+                    <div class="import-section">
+                        <!-- URL Import -->
+                        <div class="import-form">
+                            <h4>Import from URL</h4>
+                            <input type="text" id="url-input" placeholder="Enter URL" class="form-control">
+                            <input type="text" id="url-category" placeholder="Category (optional)" class="form-control">
+                            <input type="text" id="url-tags" placeholder="Tags (comma-separated)" class="form-control">
+                            <button onclick="importFromUrl()" class="btn btn-primary">Import</button>
+                        </div>
+                        
+                        <!-- File Import -->
+                        <div class="import-form">
+                            <h4>Import from File</h4>
+                            <input type="file" id="file-input" accept=".txt,.md" class="form-control">
+                            <input type="text" id="file-category" placeholder="Category (optional)" class="form-control">
+                            <input type="text" id="file-tags" placeholder="Tags (comma-separated)" class="form-control">
+                            <button onclick="importFromFile()" class="btn btn-primary">Import</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Knowledge Base Entries -->
+                <div class="card">
+                    <h3>Knowledge Base Entries</h3>
+                    <div class="filters">
+                        <input type="text" id="search-input" placeholder="Search entries..." class="form-control">
+                        <select id="category-filter" class="form-control">
+                            <option value="">All Categories</option>
+                        </select>
+                        <select id="tag-filter" class="form-control">
+                            <option value="">All Tags</option>
+                        </select>
+                    </div>
+                    <div class="entries-list" id="entries-list">
+                        <!-- Entries will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Add/Edit Entry Modal -->
+                <div id="entry-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h3 id="modal-title">Add New Entry</h3>
+                        <form id="entry-form">
+                            <input type="hidden" id="entry-id">
+                            <div class="form-group">
+                                <label for="question">Question:</label>
+                                <textarea id="question" class="form-control" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="answer">Answer:</label>
+                                <textarea id="answer" class="form-control" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category:</label>
+                                <input type="text" id="category" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="tags">Tags (comma-separated):</label>
+                                <input type="text" id="tags" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body>
+</html> 

@@ -5,46 +5,185 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bible AI Chat</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="welcome-section">
-            <h1>Hi there, <span class="highlight"></span></h1>
-            <p class="subtitle">What would you like to know?</p>
-            
-            <div class="suggestion-cards">
-                <button class="suggestion-card">
-                   What does bible say about love?
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-book-bible"></i> Bible AI Chat</h2>
+            </div>
+            <div class="sidebar-content">
+                <button class="sidebar-button new-chat">
+                    <i class="fas fa-plus"></i>
+                    New Chat
                 </button>
-                <button class="suggestion-card">
-                    Who is Jesus?
-                </button>
-                <button class="suggestion-card">
-                    What are the ten commandments?
-                </button>
-                <button class="suggestion-card">
-                    How many books are there in the bible?
-                </button>
+                <div class="previous-chats">
+                    <h3>Recent Conversations</h3>
+                    <div id="previous-chats-list">
+                        <!-- Previous chats will be added here dynamically -->
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    <button class="sidebar-button settings">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </button>
+                    <button class="sidebar-button help">
+                        <i class="fas fa-question-circle"></i>
+                        Help
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div id="chat-box"></div>
-        <div id="typing-indicator" class="hidden">thinking...</div>
-        
-        <div class="input-container">
-            <form id="chat-form">
-                <div class="input-wrapper">
-                    <input type="text" id="user-input" placeholder="Ask what you want..." required>
-                    <div class="input-actions">
-                        <button type="button" class="action-button">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
-                            </svg>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="app-title">
+                    <i class="fas fa-book-bible"></i>
+                    <span>Bible AI Chat</span>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="top-bar-button" id="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <button class="top-bar-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="top-bar-button">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <div class="welcome-section">
+                    <h1>Welcome to Bible AI Chat</h1>
+                    <p class="subtitle">Ask me anything about the Bible</p>
+                    
+                    <div class="suggestion-cards">
+                        <button class="suggestion-card">
+                            <i class="fas fa-heart"></i>
+                            What does the Bible say about love?
                         </button>
-                        <button type="submit" class="send-button">Send</button>
+                        <button class="suggestion-card">
+                            <i class="fas fa-cross"></i>
+                            Who is Jesus?
+                        </button>
+                        <button class="suggestion-card">
+                            <i class="fas fa-tablets"></i>
+                            What are the ten commandments?
+                        </button>
+                        <button class="suggestion-card">
+                            <i class="fas fa-book"></i>
+                            How many books are in the Bible?
+                        </button>
                     </div>
                 </div>
-            </form>
+
+                <div id="chat-box"></div>
+                <div id="typing-indicator" class="hidden">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                
+                <div class="input-container">
+                    <form id="chat-form">
+                        <div class="input-wrapper">
+                            <input type="text" id="user-input" placeholder="Ask your question..." required>
+                            <div class="input-actions">
+                                <button type="button" id="stop-generation" class="action-button hidden">
+                                    <i class="fas fa-stop"></i>
+                                </button>
+                                <button type="submit" class="send-button">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Settings</h2>
+            <div class="settings-section">
+                <h3>Appearance</h3>
+                <div class="setting-item">
+                    <label for="theme-select">Theme</label>
+                    <select id="theme-select">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="font-size">Font Size</label>
+                    <select id="font-size">
+                        <option value="small">Small</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Chat Settings</h3>
+                <div class="setting-item">
+                    <label for="typing-speed">Typing Speed</label>
+                    <select id="typing-speed">
+                        <option value="slow">Slow</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="save-history" checked>
+                        Save Chat History
+                    </label>
+                </div>
+            </div>
+            <button class="save-settings">Save Settings</button>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Help & Tips</h2>
+            <div class="help-section">
+                <h3>Getting Started</h3>
+                <p>Welcome to Bible AI Chat! Here are some tips to help you get the most out of your experience:</p>
+                <ul>
+                    <li>Click on any suggestion card to start a conversation</li>
+                    <li>Type your question in the input box and press Enter or click Send</li>
+                    <li>Use the "Explain Further" button to get more detailed answers</li>
+                    <li>Rate answers using the thumbs up/down buttons to help improve responses</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Features</h3>
+                <ul>
+                    <li><strong>Chat History:</strong> Access your previous conversations from the sidebar</li>
+                    <li><strong>New Chat:</strong> Start a fresh conversation by clicking the "New Chat" button</li>
+                    <li><strong>Copy Answers:</strong> Click the copy icon to copy any answer to your clipboard</li>
+                    <li><strong>Settings:</strong> Customize your experience in the Settings menu</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Need More Help?</h3>
+                <p>If you have any questions or need assistance, please contact our support team.</p>
+            </div>
         </div>
     </div>
 
