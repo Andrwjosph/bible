@@ -3,26 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible AI Chat</title>
+    <title>Scriptura</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2><i class="fas fa-book-bible"></i> Bible AI Chat</h2>
+                <h2><i class="fas fa-book-bible"></i> Scriptura</h2>
             </div>
             <div class="sidebar-content">
-                <button class="sidebar-button new-chat">
-                    <i class="fas fa-plus"></i>
-                    New Chat
-                </button>
-                <div class="previous-chats">
-                    <h3>Recent Conversations</h3>
-                    <div id="previous-chats-list">
-                        <!-- Previous chats will be added here dynamically -->
+                <div class="sidebar-section chat-section">
+                    <button class="sidebar-button new-chat">
+                        <i class="fas fa-plus"></i>
+                        New Chat
+                    </button>
+                    <div class="previous-chats">
+                        <h3>Recent Conversations</h3>
+                        <div id="previous-chats-list">
+                            <!-- Previous chats will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-section settings-section hidden">
+                    <div class="settings-header">
+                        <h3>Settings</h3>
+                        <button class="close-settings">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <label for="theme-select">Theme</label>
+                            <select id="theme-select">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="system">System</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="font-size">Font Size</label>
+                            <select id="font-size">
+                                <option value="small">Small</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="large">Large</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="typing-speed">Typing Speed</label>
+                            <select id="typing-speed">
+                                <option value="slow">Slow</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="fast">Fast</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="save-history" checked>
+                                Save Chat History
+                            </label>
+                        </div>
+                        <button class="save-settings">Save Settings</button>
                     </div>
                 </div>
                 <div class="sidebar-footer">
@@ -44,7 +88,7 @@
             <div class="top-bar">
                 <div class="app-title">
                     <i class="fas fa-book-bible"></i>
-                    <span>Bible AI Chat</span>
+                    <span>Scriptura</span>
                 </div>
                 <div class="top-bar-actions">
                     <button class="top-bar-button" id="toggle-sidebar">
@@ -62,7 +106,7 @@
             <!-- Chat Container -->
             <div class="chat-container">
                 <div class="welcome-section">
-                    <h1>Welcome to Bible AI Chat</h1>
+                    <h1>Welcome to Scriptura</h1>
                     <p class="subtitle">Ask me anything about the Bible</p>
                     
                     <div class="suggestion-cards">
@@ -111,51 +155,6 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Settings</h2>
-            <div class="settings-section">
-                <h3>Appearance</h3>
-                <div class="setting-item">
-                    <label for="theme-select">Theme</label>
-                    <select id="theme-select">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="system">System</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label for="font-size">Font Size</label>
-                    <select id="font-size">
-                        <option value="small">Small</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="large">Large</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-section">
-                <h3>Chat Settings</h3>
-                <div class="setting-item">
-                    <label for="typing-speed">Typing Speed</label>
-                    <select id="typing-speed">
-                        <option value="slow">Slow</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="fast">Fast</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="save-history" checked>
-                        Save Chat History
-                    </label>
-                </div>
-            </div>
-            <button class="save-settings">Save Settings</button>
-        </div>
-    </div>
-
     <!-- Help Modal -->
     <div id="help-modal" class="modal">
         <div class="modal-content">
@@ -163,7 +162,7 @@
             <h2>Help & Tips</h2>
             <div class="help-section">
                 <h3>Getting Started</h3>
-                <p>Welcome to Bible AI Chat! Here are some tips to help you get the most out of your experience:</p>
+                <p>Welcome to Scriptura! Here are some tips to help you get the most out of your experience:</p>
                 <ul>
                     <li>Click on any suggestion card to start a conversation</li>
                     <li>Type your question in the input box and press Enter or click Send</li>

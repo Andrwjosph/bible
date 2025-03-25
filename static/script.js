@@ -395,56 +395,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Add "Explain Further" button after typing is complete
                     if (!isDetailed) {
                         const moreDetailsButton = document.createElement('button');
-                        moreDetailsButton.classList.add('more-details-button');
-                        moreDetailsButton.innerHTML = '<i class="fas fa-info-circle"></i> Explain Further';
-                        moreDetailsButton.addEventListener('click', () => {
-                            // Disable the button immediately
-                            moreDetailsButton.disabled = true;
-                            moreDetailsButton.classList.add('clicked');
-                            
-                            showTypingIndicator('detailed');
-                            stopGenerationButton.classList.remove('hidden');
-                            
-                            // Create new AbortController for this request
-                            currentController = new AbortController();
-                            
-                            fetch('/ask', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ 
-                                    question: originalQuestion,
-                                    detailed: true 
-                                }),
-                                signal: currentController.signal
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`HTTP error! status: ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                if (!data.answer) {
-                                    throw new Error('No answer received from server');
-                                }
-                                hideTypingIndicator();
-                                stopGenerationButton.classList.add('hidden');
-                                setTimeout(() => {
-                                    appendMessageWithTypingEffect('ai', data.answer, originalQuestion, true);
-                                }, 300);
-                            })
-                            .catch(error => {
-                                if (error.name === 'AbortError') {
-                                    console.log('Request was aborted');
-                                    return;
-                                }
-                                console.error('Error:', error);
-                                hideTypingIndicator();
-                                stopGenerationButton.classList.add('hidden');
-                                appendMessage('ai', 'An error occurred. Please try again.');
-                            });
-                        });
-                        contentDiv.appendChild(document.createElement('br'));
+                        moreDetailsButton.className = 'more-details-button';
+                        moreDetailsButton.innerHTML = '<i class="fas fa-lightbulb"></i> Explain Further';
+                        moreDetailsButton.addEventListener('click', () => getDetailedResponse(text));
                         contentDiv.appendChild(moreDetailsButton);
                     }
                 }
@@ -602,4 +555,130 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize chat history when the page loads
     loadChatHistory();
+
+    // Settings functionality
+    const settingsButton = document.querySelector('.sidebar-button.settings');
+    const closeSettingsButton = document.querySelector('.close-settings');
+    const chatSection = document.querySelector('.chat-section');
+    const settingsSection = document.querySelector('.settings-section');
+    const saveSettingsButton = document.querySelector('.save-settings');
+
+    settingsButton.addEventListener('click', function() {
+        chatSection.classList.add('hidden');
+        settingsSection.classList.remove('hidden');
+    });
+
+    closeSettingsButton.addEventListener('click', function() {
+        settingsSection.classList.add('hidden');
+        chatSection.classList.remove('hidden');
+    });
+
+    saveSettingsButton.addEventListener('click', function() {
+        // Save settings logic here
+        const theme = document.getElementById('theme-select').value;
+        const fontSize = document.getElementById('font-size').value;
+        const typingSpeed = document.getElementById('typing-speed').value;
+        const saveHistory = document.getElementById('save-history').checked;
+
+        // Save to localStorage
+        localStorage.setItem('theme', theme);
+        localStorage.setItem('fontSize', fontSize);
+        localStorage.setItem('typingSpeed', typingSpeed);
+        localStorage.setItem('saveHistory', saveHistory);
+
+        // Apply settings
+        applySettings(theme, fontSize, typingSpeed, saveHistory);
+
+        // Show success message
+        showNotification('Settings saved successfully!', 'success');
+
+        // Close settings
+        settingsSection.classList.add('hidden');
+        chatSection.classList.remove('hidden');
+    });
+
+    // Load saved settings
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedFontSize = localStorage.getItem('fontSize') || 'medium';
+    const savedTypingSpeed = localStorage.getItem('typingSpeed') || 'medium';
+    const savedSaveHistory = localStorage.getItem('saveHistory') !== 'false';
+
+    document.getElementById('theme-select').value = savedTheme;
+    document.getElementById('font-size').value = savedFontSize;
+    document.getElementById('typing-speed').value = savedTypingSpeed;
+    document.getElementById('save-history').checked = savedSaveHistory;
+
+    // Apply saved settings
+    applySettings(savedTheme, savedFontSize, savedTypingSpeed, savedSaveHistory);
+
+    function getDetailedResponse(text) {
+        // Disable the button immediately
+        const button = event.target.closest('.more-details-button');
+        button.disabled = true;
+        button.classList.add('clicked');
+        
+        showTypingIndicator('detailed');
+        stopGenerationButton.classList.remove('hidden');
+        
+        // Create new AbortController for this request
+        currentController = new AbortController();
+        
+        fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                question: text,
+                detailed: true 
+            }),
+            signal: currentController.signal
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.answer) {
+                throw new Error('No answer received from server');
+            }
+            hideTypingIndicator();
+            stopGenerationButton.classList.add('hidden');
+            setTimeout(() => {
+                appendMessageWithTypingEffect('ai', data.answer, text, true);
+            }, 300);
+        })
+        .catch(error => {
+            if (error.name === 'AbortError') {
+                console.log('Request was aborted');
+                return;
+            }
+            console.error('Error:', error);
+            hideTypingIndicator();
+            stopGenerationButton.classList.add('hidden');
+            appendMessage('ai', 'An error occurred. Please try again.');
+        });
+    }
 });
+
+function applySettings(theme, fontSize, typingSpeed, saveHistory) {
+    // Apply theme
+    document.body.className = theme;
+
+    // Apply font size
+    const fontSizeMap = {
+        'small': '14px',
+        'medium': '16px',
+        'large': '18px'
+    };
+    document.body.style.fontSize = fontSizeMap[fontSize];
+
+    // Apply typing speed
+    window.typingSpeed = typingSpeed === 'slow' ? 50 : typingSpeed === 'medium' ? 30 : 15;
+
+    // Apply chat history setting
+    window.saveChatHistory = saveHistory;
+    if (!saveHistory) {
+        localStorage.removeItem('chatHistory');
+    }
+}
